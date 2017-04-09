@@ -1,0 +1,407 @@
+import java.lang.Math; 
+import java.util.*;
+import java.util.regex.*;
+public class HelloWorld
+{
+  
+  // METHOD FOR INDEX VECTOR
+  
+  public static HashMap<String, float[]> indexVector(String[] wordArray){
+		HashMap<String, float[]> randomVector=new HashMap<String, float[]>();
+		
+		for(int j=0; j<wordArray.length; j++){		
+		float[] b=new float[100];		
+		for(int i=0; i<99; i++){
+			b[i]=0;
+		}
+		int flag=0,max,min;		
+		min=0;
+		max=99;		
+		while(flag!=4){
+			int x=min+(int)(Math.random()*((max - min)+1));			
+			if(b[x]==0 && flag%2==0){
+				b[x]=1;
+				flag++;
+			}
+			else if(b[x]==0 && flag%2!=0){
+				b[x]=-1;
+				flag++;
+			}
+			
+			else continue;
+		}
+		
+		randomVector.put(wordArray[j], b);
+		}
+		
+		return randomVector;
+	}
+  
+  // METHOD FOR FINDING UNIQUE WORDS
+  public static String[] GetUniqueWords(ArrayList<String> input)
+    {
+      if (input.isEmpty())
+        return new String[0];
+      else
+      {
+        ArrayList<String> result = new ArrayList<String>();
+        for (int i = 0; i < input.size(); i++)
+          if (!result.contains(input.get(i)))
+            result.add(input.get(i));
+        return (String[])result.toArray(new String[result.size()]);
+      }
+    }
+  
+  //method for returning number of distinct words
+  
+  public static int uniqueNumber(String input){
+    
+    String[] uniqueWords=input.split("\\s");
+    
+        ArrayList<String> result = new ArrayList<String>();
+        for (int i = 0; i < uniqueWords.length; i++)
+          if (!result.contains(uniqueWords[i]))
+            result.add(uniqueWords[i]);
+        
+          //System.out.println(result);
+          
+          return result.size();
+      
+  }
+  
+  
+  //METHOD FOR MULTIPLICATION OF VECTORS
+  
+  public static float[] multiply(float[] arr, float b){
+    
+    for(int i=0; i<arr.length; i++){    
+      arr[i]=b*arr[i];
+    }
+    return arr;
+  }
+  
+  //METHOD FOR ADDTION OF TWO VECTORS
+  
+  public static float[] add(float[] arr1, float[] temparr){
+    float[] temp=new float[100];
+    for(int i=0; i<100; i++){
+      temp[i]=arr1[i]+temparr[i];
+    }
+    return temp;
+  }
+  
+  //METHOD FOR ADDTION OF THREE VECTORS
+  
+  public static float[] add(float[] arr1, float[] arr2, float[] temparr){
+    float[] temp=new float[100];
+    for(int i=0; i<100; i++){
+      temp[i]=arr1[i]+arr2[i]+temparr[i];
+    }
+    return temp;
+  }
+  
+  //METHOD FOR ADDTIONS OF FIVE VECTORS
+  
+   public static float[] add(float[] arr1, float[] arr2, float[] arr3, float[] arr4, float[] temparr){
+    float[] temp=new float[100];
+    for(int i=0; i<100; i++){
+      temp[i]=arr1[i]+arr2[i]+arr3[i]+arr4[i]+temparr[i];
+    }
+    return temp;
+  }
+  
+  // METHOD FOR SUBTRACTION OF TWO VECTORS
+  
+  public static float[] sub( float[] arr1, float[] arr2)
+  {
+    float[] temp=new float[100];
+    for(int i=0; i<100; i++){
+      temp[i]=arr1[i]-arr2[i];
+    }
+    return temp;
+  }
+  
+  // METHOD FOR CALCULATING FREQUENCY OF WORD IN SENTENCE
+  
+  public static int countFrequency(String line, String word){
+    Pattern pattern = Pattern.compile("\\b"+word+"\\b");
+    Matcher matcher = pattern.matcher(line);
+    int counter = 0;
+    while (matcher.find())
+        counter++;
+    return counter;
+}
+  
+  //--------------------------------------------------------------------------------MAIN METHOD-----------------------------------------------------------------------//
+ 
+  public static void main(String[] args)
+  {
+    String s="This is my string this. It breaks on it breaks on full stop. Hello hello ring. Testing it. Again and again blah blah";
+    
+    // ---------INDEX VECTOR BEGINS-------- //
+    
+    s=s.toLowerCase(); // SO THAT CAPITAL IT AND SMALL IT ARE SAME
+    String[] sentences = s.split("\\.");     // FIRST BREAK INTO SENTENCES AND THEN WORDS TO KNOW THE PLACE OF FULLSTOPS
+        
+    ArrayList<String> updatableList = new ArrayList<String>();
+
+    for(int i=0; i<sentences.length; i++){
+    String[] words=sentences[i].split("\\s+");
+    List<String> newList = Arrays.asList(words);           
+    updatableList.addAll(newList);
+    updatableList.add(".");      
+    }
+    
+    updatableList.removeAll(Arrays.asList(null,""));  
+    
+    String[] words=GetUniqueWords(updatableList);
+    
+    HashMap<String, float[]> randV=indexVector(words);
+    
+    // -------INDEX VECTOR ENDS-------- //
+    
+    // ---------CONTEXT VECTOR BEGINS--------- //
+    
+    String prev1,prev2,next1,next2;
+    
+    HashMap<String, float[]> contextV=new HashMap<String, float[]>();
+    
+    float[] zeroarr=new float[100];
+    for(int i=0; i<zeroarr.length; i++){
+      zeroarr[i]=0;
+    }    
+    for(int i=0; i<words.length; i++){
+      contextV.put(words[i],zeroarr);
+    }
+    
+    float zeropoint5=(float)0.5;
+    
+    for(int i=0; i<updatableList.size(); i++)
+    {	
+      String temp=updatableList.get(i);
+      if(i>0)
+      prev1=updatableList.get(i-1);
+      else
+      prev1=".";
+      if(i>1)
+      prev2=updatableList.get(i-2);
+      else
+        prev2=".";
+      if(i<updatableList.size()-1)
+      next1=updatableList.get(i+1);
+      else
+        next1=".";
+      if(i<updatableList.size()-2)
+      next2=updatableList.get(i+2);
+      else
+        next2=".";
+      float[] temparr=contextV.get(temp);
+      
+        if( !prev1.equals(".") && !prev2.equals(".") && !next1.equals(".") && !next2.equals(".") )
+        temparr=add(randV.get(prev1),multiply(randV.get(prev2),zeropoint5),randV.get(next1),multiply(randV.get(next2),zeropoint5),temparr);
+        
+        else if( !next1.equals(".") && !next2.equals(".") )
+        temparr=add(randV.get(next1),multiply(randV.get(next2),zeropoint5), temparr);
+        
+        else if( !prev1.equals(".") && !prev2.equals(".") )
+        temparr=add(randV.get(prev1),multiply(randV.get(prev2),zeropoint5), temparr);
+        
+        contextV.put(temp,temparr);              
+   
+  }
+    
+    
+    // --------CONTEXT VECTOR ENDS----------- //
+    
+    // --------SEMANTIC VECTOR BEGINS---------- // 
+    
+    //CALCULATION OF MEANV
+    
+    float[] meanVector=new float[100];
+    Iterator<Map.Entry<String, float[]>> i = contextV.entrySet().iterator();
+    while(i.hasNext())
+    {
+      String key = i.next().getKey();
+      if(key!="."){
+      meanVector=add(contextV.get(key),meanVector);        
+      }
+    }
+    
+    float total_words=words.length-1;
+    float onedividedbytotalwords= 1/total_words;
+    
+    meanVector=multiply(meanVector, onedividedbytotalwords);
+    
+    // SUBTRACTION OF CONTEXTV AND MEANV //
+    for(int count=0; count<words.length; count++){
+      float[] temp=new float[100];
+      if(words[count]!="."){
+        temp=contextV.get(words[count]);
+        temp=sub(temp,meanVector);
+      }
+      randV.put(words[count],temp);		// PUTTING CONTEXT-MEAN IN RANDV FOR SAVING MEMORY
+    }   
+    
+    //ADDING AND CALCULATING SEMANTIC VECTOR
+    
+    HashMap<Integer, float[]> semanticVector=new HashMap<Integer, float[]>(); //sentencenumber to key
+    float[] documentV=new float[100];			//document vector
+    
+    for(int c=0; c<100; c++)
+      documentV[c]=0;
+    
+    for(int count=0; count<sentences.length; count++)
+      semanticVector.put(count,zeroarr);
+    
+    
+    Iterator<String> upIterator = updatableList.iterator();
+    float lengthofsentence=0;
+    int sentencenum=0;
+		
+    while (upIterator.hasNext()) {
+          String word=upIterator.next();
+          if(word!="."){
+            lengthofsentence++;
+            zeroarr=add(randV.get(word),zeroarr);
+          }
+          
+          else{
+            
+            float onedividedbylos= 1/lengthofsentence;
+            zeroarr=multiply(zeroarr,onedividedbylos);
+     		
+            documentV=add(zeroarr,documentV);
+           
+            semanticVector.put(sentencenum,zeroarr);
+           
+            for(int co=0; co<100; co++)
+              zeroarr[co]=0;
+       	
+            lengthofsentence=0;
+            sentencenum++;
+            
+          }
+		}
+    
+	/*	Iterator it = semanticVector.entrySet().iterator();
+    	while (it.hasNext()){
+        Map.Entry pair = (Map.Entry)it.next();
+        System.out.println(pair.getKey() + " = " + pair.getValue());
+        }
+    
+    */
+    // --------------SEMANTIC VECTOR ENDS---------------------------- //
+    
+    // ------------------NODE WEIGHT BEGINS ---------------------//
+    // Making a list of common words
+    
+    List<String> commonWords=new ArrayList<String>();
+    
+    commonWords.add("a");
+    commonWords.add("an");
+    commonWords.add("the");
+    commonWords.add("is");
+    commonWords.add("of");
+	commonWords.add("and");
+    commonWords.add("are");
+    
+    // System.out.print(updatableList);
+  
+    HashMap<Integer, float[]> nodeW=new HashMap<Integer, float[]>();	//hashmap for nodeweight of every sentence with sentencenumber as key and float array as value
+        
+    // creating dynamic vectors for nodeweight
+    
+    
+    Iterator<String> upIterator2 = updatableList.iterator();
+    int length2=0;
+    int sentencenum2=0;
+    List<String> doneW=new ArrayList<String>(); // to eliminate repetition of words in counting
+		
+    while (upIterator2.hasNext()) {
+          String word=upIterator2.next();
+        if(word!="." && !commonWords.contains(word) && !doneW.contains(word)){
+            length2++;
+            doneW.add(word);
+          }
+      	
+      	else if(word=="."){
+        
+        float[] dynamicarrfornode=new float[length2];
+        
+         for(int cc=0; cc<length2; cc++)
+          dynamicarrfornode[cc]=0;
+        
+       // System.out.println(sentencenum2+" "+length2);
+        
+          nodeW.put(sentencenum2,dynamicarrfornode);
+        
+          sentencenum2++;
+          length2=0;
+          doneW.clear();
+      }
+    
+    }
+    
+    // HASHMAP WITH DYNAMIC ARRAYS CREATED, NOW INITIALIZE WITH PROPER VALUES
+    
+    HashMap<String, Integer> wordFrequency=new HashMap<String, Integer>();  
+    
+    for(int cc=0; cc<words.length; cc++){
+      int temp=0;
+      if(words[cc]!="." && !commonWords.contains(words[cc]))
+      {temp= countFrequency(s, words[cc]);
+      wordFrequency.put(words[cc],temp); 
+      }
+    }
+    	/* Iterator it =wordFrequency.entrySet().iterator();
+    	while (it.hasNext()){
+        Map.Entry pair = (Map.Entry)it.next();
+        System.out.println(pair.getKey() + " = " + pair.getValue());
+        } */
+    
+    Iterator<String> upIterator3 = updatableList.iterator();
+    
+    sentencenum=0;
+    int tempmul=0;
+    int arrayIndex=0;
+    float noofwords=(float)0.0;
+    while(upIterator3.hasNext()){
+      String word=upIterator3.next();
+      int temp=0;      
+      
+        if(word!="." && !commonWords.contains(word) && !doneW.contains(word)){
+      	  temp=countFrequency(sentences[sentencenum],word);
+          tempmul=wordFrequency.get(word); 
+          temp=temp*tempmul;
+          float[] temparray=nodeW.get(sentencenum);
+          temparray[arrayIndex]=temp;
+          nodeW.put(sentencenum,temparray);
+          doneW.add(word);
+          arrayIndex++;  
+        }
+            
+      else if(word=="."){
+		noofwords=uniqueNumber(sentences[sentencenum].trim());
+       // System.out.println(noofwords);
+        float onedividedbynow=1/noofwords;        
+        float[] temparray=nodeW.get(sentencenum);      
+        temparray=multiply(temparray, onedividedbynow);
+        nodeW.put(sentencenum,temparray);
+        sentencenum++;
+        doneW.clear();
+        arrayIndex=0;  
+        noofwords=0;
+      }
+    }
+    
+    for (Integer name: nodeW.keySet()){
+
+            String key =name.toString();
+            String value = Arrays.toString(nodeW.get(name));  
+            System.out.println(key + " " + value);  
+
+		} 
+    
+  }
+}
+
